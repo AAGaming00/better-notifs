@@ -39,6 +39,14 @@ module.exports = class BetterNotifs extends Plugin {
             enableRemoteModule: true
           }
         });
+      const handleRedirect = (e, url) => {
+        if(url != win.webContents.getURL()) {
+            e.preventDefault()
+            require('electron').shell.openExternal(url)
+        }
+      }
+      win.webContents.on('will-navigate', handleRedirect)
+      win.webContents.on('new-window', handleRedirect)
         console.log(parsedArgs[1].content);
         win.setResizable(false);
         win.webContents.on('did-finish-load', () => {
@@ -48,9 +56,9 @@ module.exports = class BetterNotifs extends Plugin {
               if (message) {
                 const guild = getGuild(message[0].guild_id);
                 transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
-                resolve(message);
+                Promise.resolve(message);
               }
-              reject();
+              Promise.reject();
             }
           );
           win.webContents.executeJavaScript(`
