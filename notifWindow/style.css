@@ -1,7 +1,8 @@
-#notif{
+#bn-notif{
     display:flex;
 }
-#avatar {
+
+#bn-avatar {
     width: 100px;
     height: 100px;
     border-radius: 50%;
@@ -9,18 +10,22 @@
     -moz-border-radius: 50%;
     -ms-border-radius: 50%;
     -o-border-radius: 50%;
-  }
-.t {
+}
+
+.bn-t {
     margin-left: 10px;
     font-size: 14pt;
 }
-.body{
+
+.bn-body{
     flex-direction: column;
 }
-#text {
+
+#bn-text {
     text-overflow: clip;
     margin-top: 10px;
 }
+
 body {
     font-family: 'Whitney', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: black;
