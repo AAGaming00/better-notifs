@@ -1,4 +1,12 @@
 (async () => {
+  // Open all links in external browser
+  const { shell } = require('electron');
+  document.addEventListener('click', (event) => {
+    if (event.target.tagName === 'A' && event.target.href.startsWith('http')) {
+      event.preventDefault();
+      shell.openExternal(event.target.href);
+    }
+  });
   function sleep (ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
