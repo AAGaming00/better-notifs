@@ -13,9 +13,9 @@
         
     }
     const notif = JSON.parse(getQueryStringValue('message'))
-    document.getElementById('avatar').src = `https://cdn.discordapp.com/avatars/${notif[2].id}/${notif[2].avatar}.png?size=2048`
-    document.getElementById('text').innerHTML = notif[1].content
-    document.getElementById('username').innerHTML = notif[2].username
+    document.getElementById('bn-avatar').src = `https://cdn.discordapp.com/avatars/${notif[2].id}/${notif[2].avatar}.png?size=2048`
+    document.getElementById('bn-text').innerHTML = notif[1].content
+    document.getElementById('bn-username').innerHTML = notif[2].username
     const screenData = screenInfo.getAllDisplays()[0]
     setTimeout(async () => {
         for (let i = 0; i < 100 ; i++) {
@@ -35,7 +35,7 @@
         window.close()
     }
     const closeTimeout = setTimeout(closeWindow, 5000)
-    const notifElem = document.getElementById('notif')
+    const notifElem = document.getElementById('bn-notif')
     notifElem.onclick = () => {
         notifElem.onclick = undefined
         clearTimeout(closeTimeout)
