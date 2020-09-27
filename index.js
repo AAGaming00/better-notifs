@@ -8,11 +8,10 @@ const { getChannel } = getModule([ 'getChannel' ], false);
 const { getGuild } = getModule([ 'getGuild' ], false);
 const { markdownToHtml } = getModule([ 'markdownToHtml' ], false);
 const shouldDisplayNotifications = getModule([ 'shouldDisplayNotifications' ], false);
+const showNotifm = getModule([ 'makeTextChatNotification' ], false);
 const transition = getModule([ 'transitionTo' ], false);
 module.exports = class BetterNotifs extends Plugin {
   startPlugin () {
-    const showNotifm = getModule([ 'makeTextChatNotification' ], false);
-    const transition = getModule([ 'transitionTo' ], false);
     inject('betterNotifs', showNotifm, 'makeTextChatNotification', (args) => {
       console.log(args);
       if (!shouldDisplayNotifications.shouldDisplayNotifications.bind(shouldDisplayNotifications)()) {
@@ -68,18 +67,24 @@ module.exports = class BetterNotifs extends Plugin {
     }, true);
     ipcRenderer.on(
       'better-notifs-jump',
-      (event, message) => {
-        if (message) {
-          const guild = getGuild(message[0].guild_id);
-          transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
-          Promise.resolve(message);
-        }
-        Promise.reject();
-      }
+      this.ipcHandler
     );
   }
 
   pluginWillUnload () {
     uninject('betterNotifs');
+    ipcRenderer.removeListener(
+      'better-notifs-jump',
+      this.ipcHandler
+    );
   }
+
+  ipcHandler (event, message) {
+    if (message) {
+      const guild = getGuild(message[0].guild_id);
+      transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
+      Promise.resolve(message);
+    }
+    Promise.reject();
+  };
 };
