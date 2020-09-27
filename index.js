@@ -39,14 +39,7 @@ module.exports = class BetterNotifs extends Plugin {
             enableRemoteModule: true
           }
         });
-      const handleRedirect = (e, url) => {
-        if(url != win.webContents.getURL()) {
-            e.preventDefault()
-            require('electron').shell.openExternal(url)
-        }
-      }
-      win.webContents.on('will-navigate', handleRedirect)
-      win.webContents.on('new-window', handleRedirect)
+        //win.openDevTools()
         console.log(parsedArgs[1].content);
         win.setResizable(false);
         win.webContents.on('did-finish-load', () => {
@@ -58,6 +51,14 @@ module.exports = class BetterNotifs extends Plugin {
         win.showInactive();
         getCurrentWindow().webContents.focus();
         win.loadFile(path.join(__dirname, 'notifWindow', 'index.html'), { query: { message: JSON.stringify(parsedArgs) } });
+        const handleRedirect = (e, url) => {
+          if (url != win.webContents.getURL()) {
+            e.preventDefault();
+            require('electron').shell.openExternal(url);
+          }
+        };
+        win.webContents.on('will-navigate', handleRedirect);
+        win.webContents.on('new-window', handleRedirect);
       }, 0);
       inject('betterNotifs-blocker', shouldDisplayNotifications, 'shouldDisplayNotifications', (args) => false, true);
       setTimeout(() => {
@@ -86,5 +87,5 @@ module.exports = class BetterNotifs extends Plugin {
       Promise.resolve(message);
     }
     Promise.reject();
-  };
+  }
 };

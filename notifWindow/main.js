@@ -20,6 +20,7 @@
     return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
   }
   const notif = JSON.parse(getQueryStringValue('message'));
+  console.log(notif)
   document.getElementById('bn-avatar').src = `https://cdn.discordapp.com/avatars/${notif[2].id}/${notif[2].avatar}.png?size=2048`;
   document.getElementById('bn-text').innerHTML = notif[1].content;
   document.getElementById('bn-username').innerHTML = notif[2].username;
