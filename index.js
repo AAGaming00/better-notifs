@@ -33,6 +33,7 @@ module.exports = class BetterNotifs extends Plugin {
           alwaysOnTop: true,
           skipTaskbar: true,
           frame: false,
+          show: false,
           webPreferences: {
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
@@ -65,6 +66,8 @@ module.exports = class BetterNotifs extends Plugin {
             window.windowId = ${getCurrentWindow().webContents.id};
           `);
         });
+        // show window without setting focus
+        win.showInactive()
         win.loadFile(path.join(__dirname, 'notifWindow', 'index.html'), { query: { message: JSON.stringify(parsedArgs) } });
       }, 0);
       inject('betterNotifs-blocker', shouldDisplayNotifications, 'shouldDisplayNotifications', (args) => false, true);
