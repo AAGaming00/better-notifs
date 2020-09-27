@@ -67,7 +67,8 @@ module.exports = class BetterNotifs extends Plugin {
           `);
         });
         // show window without setting focus
-        win.showInactive()
+        win.showInactive();
+        getCurrentWindow.focus()
         win.loadFile(path.join(__dirname, 'notifWindow', 'index.html'), { query: { message: JSON.stringify(parsedArgs) } });
       }, 0);
       inject('betterNotifs-blocker', shouldDisplayNotifications, 'shouldDisplayNotifications', (args) => false, true);
