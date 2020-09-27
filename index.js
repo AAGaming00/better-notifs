@@ -51,17 +51,6 @@ module.exports = class BetterNotifs extends Plugin {
         console.log(parsedArgs[1].content);
         win.setResizable(false);
         win.webContents.on('did-finish-load', () => {
-          ipcRenderer.on(
-            'better-notifs-jump',
-            (event, message) => {
-              if (message) {
-                const guild = getGuild(message[0].guild_id);
-                transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
-                Promise.resolve(message);
-              }
-              Promise.reject();
-            }
-          );
           win.webContents.executeJavaScript(`
             window.windowId = ${getCurrentWindow().webContents.id};
           `);
@@ -77,6 +66,17 @@ module.exports = class BetterNotifs extends Plugin {
       }, 0);
       return args;
     }, true);
+    ipcRenderer.on(
+      'better-notifs-jump',
+      (event, message) => {
+        if (message) {
+          const guild = getGuild(message[0].guild_id);
+          transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
+          Promise.resolve(message);
+        }
+        Promise.reject();
+      }
+    );
   }
 
   pluginWillUnload () {
