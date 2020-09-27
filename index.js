@@ -33,30 +33,31 @@ module.exports = class BetterNotifs extends Plugin {
           alwaysOnTop: true,
           skipTaskbar: true,
           frame: false,
+          show: false,
           webPreferences: {
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
             enableRemoteModule: true
           }
         });
+      const handleRedirect = (e, url) => {
+        if(url != win.webContents.getURL()) {
+            e.preventDefault()
+            require('electron').shell.openExternal(url)
+        }
+      }
+      win.webContents.on('will-navigate', handleRedirect)
+      win.webContents.on('new-window', handleRedirect)
         console.log(parsedArgs[1].content);
         win.setResizable(false);
         win.webContents.on('did-finish-load', () => {
-          ipcRenderer.on(
-            'better-notifs-jump',
-            (event, message) => {
-              if (message) {
-                const guild = getGuild(message[0].guild_id);
-                transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
-                resolve(message);
-              }
-              reject();
-            }
-          );
           win.webContents.executeJavaScript(`
             window.windowId = ${getCurrentWindow().webContents.id};
           `);
         });
+        // show window without setting focus
+        win.showInactive();
+        getCurrentWindow().webContents.focus();
         win.loadFile(path.join(__dirname, 'notifWindow', 'index.html'), { query: { message: JSON.stringify(parsedArgs) } });
       }, 0);
       inject('betterNotifs-blocker', shouldDisplayNotifications, 'shouldDisplayNotifications', (args) => false, true);
@@ -65,6 +66,17 @@ module.exports = class BetterNotifs extends Plugin {
       }, 0);
       return args;
     }, true);
+    ipcRenderer.on(
+      'better-notifs-jump',
+      (event, message) => {
+        if (message) {
+          const guild = getGuild(message[0].guild_id);
+          transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
+          Promise.resolve(message);
+        }
+        Promise.reject();
+      }
+    );
   }
 
   pluginWillUnload () {
