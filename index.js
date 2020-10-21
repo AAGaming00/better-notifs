@@ -31,8 +31,12 @@ module.exports = class BetterNotifs extends Plugin {
           y: -900000,
           alwaysOnTop: true,
           skipTaskbar: true,
+          type: 'splash',
           frame: false,
           show: false,
+          resizable: false,
+          acceptFirstMouse: true,
+          transparent: true,
           webPreferences: {
             nodeIntegration: true,
             nodeIntegrationInWorker: true,
