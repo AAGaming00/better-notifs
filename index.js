@@ -34,6 +34,7 @@ module.exports = class BetterNotifs extends Plugin {
           type: 'splash',
           frame: false,
           show: false,
+          focusable: false,
           resizable: false,
           acceptFirstMouse: true,
           transparent: true,
