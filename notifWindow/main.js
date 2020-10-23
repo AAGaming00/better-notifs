@@ -47,6 +47,8 @@
 
       if (i < 100) {
         requestAnimationFrame(closeWindow);
+      } else {
+        window.close()
       }
       const { width, height } = screenData.size;
       const x =  Math.floor(width - (document.documentElement.clientWidth + 20) + easeOutExpo(i / 100) * document.documentElement.clientWidth * 1.05);
