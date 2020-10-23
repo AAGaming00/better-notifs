@@ -73,6 +73,6 @@
       'better-notifs-jump',
       notif
     );
-    closeWindow();
+    endAnim();
   };
 })();
