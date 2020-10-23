@@ -28,13 +28,13 @@
   async function startAnim () {
     let i = 0;
     async function openWindow () {
-      i++;
-      const { width, height } = screenData.size;
-      const x = Math.floor(width - (document.documentElement.clientWidth + 20) * easeOutExpo(i / 100));
-      win.setPosition(x, height - document.documentElement.clientHeight - 80);
+      i += 1.3;
       if (i < 100) {
         requestAnimationFrame(openWindow);
       }
+      const { width, height } = screenData.size;
+      const x = Math.floor(width - (document.documentElement.clientWidth + 20) * easeOutExpo(i / 100));
+      win.setPosition(x, height - document.documentElement.clientHeight - 80);
     }
     requestAnimationFrame(openWindow);
   }
@@ -43,13 +43,14 @@
   async function endAnim () {
     let i = 0;
     async function closeWindow () {
-      i++;
-      const { width, height } = screenData.size;
-      const x =  Math.floor(width - (document.documentElement.clientWidth + 20) + easeOutExpo(i / 100) * document.documentElement.clientWidth * 1.05);
-      win.setPosition(x, height - document.documentElement.clientHeight - 80);
+      i += 1.3;
+
       if (i < 100) {
         requestAnimationFrame(closeWindow);
       }
+      const { width, height } = screenData.size;
+      const x =  Math.floor(width - (document.documentElement.clientWidth + 20) + easeOutExpo(i / 100) * document.documentElement.clientWidth * 1.05);
+      win.setPosition(x, height - document.documentElement.clientHeight - 80);
     }
     requestAnimationFrame(closeWindow);
   }
