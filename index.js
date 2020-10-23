@@ -24,14 +24,16 @@ module.exports = class BetterNotifs extends Plugin {
         .replace(/<@&(\d+)>/g, (_, p) => `@${getGuild(args[0].guild_id).roles[p].name}`)
         .replace(/\|\|.+\|\|/g, (_, p) => '<spoiler>')); // Thanks Ben!
       setTimeout(() => {
+        const bodyStyle = window.getComputedStyle(document.documentElement)
+        console.log(bodyStyle.getPropertyValue('--bn-height').trim() || 120)
         const win = new BrowserWindow({
-          height: 120,
-          width: 400,
+          height: parseInt(bodyStyle.getPropertyValue('--bn-height').trim()) || 120,
+          width: parseInt(bodyStyle.getPropertyValue('--bn-width').trim()) || 400,
           x: -900000,
           y: -900000,
           alwaysOnTop: true,
           skipTaskbar: true,
-          type: 'splash',
+          type: 'notification',
           frame: false,
           show: false,
           focusable: false,
@@ -44,7 +46,7 @@ module.exports = class BetterNotifs extends Plugin {
             enableRemoteModule: true
           }
         });
-        //win.openDevTools()
+        //win.openDevTools();
         console.log(parsedArgs[1].content);
         win.setResizable(false);
         win.webContents.on('did-finish-load', () => {
@@ -54,7 +56,6 @@ module.exports = class BetterNotifs extends Plugin {
         });
         // show window without setting focus
         win.showInactive();
-        getCurrentWindow().webContents.focus();
         win.loadFile(path.join(__dirname, 'notifWindow', 'index.html'), { query: { message: JSON.stringify(parsedArgs) } });
         const handleRedirect = (e, url) => {
           if (url != win.webContents.getURL()) {
@@ -64,6 +65,19 @@ module.exports = class BetterNotifs extends Plugin {
         };
         win.webContents.on('will-navigate', handleRedirect);
         win.webContents.on('new-window', handleRedirect);
+        win.webContents.executeJavaScript('let newLink;');
+        const styles = [];
+        Array.prototype.forEach.call(document.querySelectorAll('style'), (link) => {
+          styles.push(encodeURIComponent(link.innerHTML));
+        });
+        win.webContents.executeJavaScript(`
+        const { styles } = ${JSON.stringify({ styles })};
+        styles.forEach((style) => {
+          newLink = document.createElement('style');
+          newLink.innerHTML = decodeURIComponent(style);
+          document.head.appendChild(newLink);
+        })
+        `);
       }, 0);
       inject('betterNotifs-blocker', shouldDisplayNotifications, 'shouldDisplayNotifications', (args) => false, true);
       setTimeout(() => {

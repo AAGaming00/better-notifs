@@ -10,9 +10,9 @@
   function sleep (ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-  const { ipcRenderer } = require('electron');
-  const screenInfo = require('electron').remote.screen;
-  const win = require('electron').remote.getCurrentWindow();
+  const { ipcRenderer, remote: { getCurrentWindow, screen: screenInfo } } = require('electron');
+  const win = getCurrentWindow();
+  win.webContents.getOwnerBrowserWindow();
   function getQueryStringValue (key) {
     return decodeURIComponent(window.location.search.replace(new RegExp(`^(?:.*[&\\?]${encodeURIComponent(key).replace(/[\.\+\*]/g, '\\$&')}(?:\\=([^&]*))?)?.*$`, 'i'), '$1'));
   }
@@ -20,34 +20,55 @@
     return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
   }
   const notif = JSON.parse(getQueryStringValue('message'));
-  console.log(notif)
+  console.log(notif);
   document.getElementById('bn-avatar').src = `https://cdn.discordapp.com/avatars/${notif[2].id}/${notif[2].avatar}.png?size=2048`;
   document.getElementById('bn-text').innerHTML = notif[1].content;
   document.getElementById('bn-username').innerHTML = notif[2].username;
   const screenData = screenInfo.getAllDisplays()[0];
-  setTimeout(async () => {
-    for (let i = 0; i < 100; i++) {
-      const { width } = screenData.size;
-      const x = Math.floor(width - 420 * easeOutExpo(i / 100));
-      win.setPosition(x, screenData.size.height - 200);
-      await sleep(10);
+  async function startAnim () {
+    let i = 0;
+    async function openWindow () {
+      i++;
+      const { width, height } = screenData.size;
+      const x = Math.floor(width - (document.documentElement.clientWidth + 20) * easeOutExpo(i / 100));
+      win.setPosition(x, height - document.documentElement.clientHeight - 80);
+      if (i < 100) {
+        requestAnimationFrame(openWindow);
+      }
     }
-  }, 0);
-  async function closeWindow () {
-    for (let i = 0; i < 100; i++) {
-      const { width } = screenData.size;
-      const x =  Math.floor(width - 420 + easeOutExpo(i / 100) * 420);
-      win.setPosition(x, screenData.size.height - 200);
-      await sleep(10);
-    }
-    window.close();
+    requestAnimationFrame(openWindow);
   }
-  const closeTimeout = setTimeout(closeWindow, 5000);
+  startAnim();
+
+  async function endAnim () {
+    let i = 0;
+    async function closeWindow () {
+      i++;
+      const { width, height } = screenData.size;
+      const x =  Math.floor(width - (document.documentElement.clientWidth + 20) + easeOutExpo(i / 100) * document.documentElement.clientWidth * 1.05);
+      win.setPosition(x, height - document.documentElement.clientHeight - 80);
+      if (i < 100) {
+        requestAnimationFrame(closeWindow);
+      }
+    }
+    requestAnimationFrame(closeWindow);
+  }
+  let closeTimeout = setTimeout(endAnim, 5000);
+
+
+  window.onmouseover = () => {
+    clearTimeout(closeTimeout);
+  };
+
+  window.onmouseout = () => {
+    closeTimeout = setTimeout(endAnim, 5000);
+  };
+
   const notifElem = document.getElementById('bn-notif');
   notifElem.onclick = () => {
     notifElem.onclick = undefined;
     clearTimeout(closeTimeout);
-    require('electron').ipcRenderer.sendTo(
+    ipcRenderer.sendTo(
       windowId,
       'better-notifs-jump',
       notif
