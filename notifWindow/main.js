@@ -71,8 +71,7 @@
   notifElem.onclick = () => {
     notifElem.onclick = undefined;
     clearTimeout(closeTimeout);
-    ipcRenderer.sendTo(
-      windowId,
+    ipcRenderer.send(
       'better-notifs-jump',
       notif
     );
