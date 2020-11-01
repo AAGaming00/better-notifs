@@ -93,12 +93,13 @@ function FpsCtrl (fps, callback) {
     const x = Math.floor(width - (document.documentElement.clientWidth + 20) * easeOutExpo(i / 100));
     win.setPosition(x, height - document.documentElement.clientHeight - 80);
   }
-  window.addEventListener('DOMContentLoaded', () => {
-    startAnimator.start();
-  });
   const endAnimator = new FpsCtrl(60, endAnim);
   let ii = 0;
   async function endAnim () {
+    if (ii === 0) {
+      startAnimator.pause();
+      clearTimeout(closeTimeout);
+    }
     ii += 1;
 
     if (ii > 100) {
@@ -113,10 +114,13 @@ function FpsCtrl (fps, callback) {
     win.setPosition(x, height - document.documentElement.clientHeight - 80);
   }
 
-  let closeTimeout = setTimeout(endAnimator.start, 5000);
-
+  let closeTimeout;
+  document.getElementById('bn-avatar').onerror = document.getElementById('bn-avatar').onload = () => {
+    startAnimator.start();
+    closeTimeout = setTimeout(endAnimator.start, 5000);
+  };
   document.documentElement.onmouseover = (event) => {
-    console.log(event)
+    console.log(event);
     if (document.documentElement !== event.relatedTarget) {
       return;
     }
@@ -125,7 +129,7 @@ function FpsCtrl (fps, callback) {
   };
 
   document.body.onmouseout = (event) => {
-    console.log(event)
+    console.log(event);
     if (document.documentElement !== event.relatedTarget) {
       return;
     }

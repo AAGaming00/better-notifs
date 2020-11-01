@@ -1,7 +1,10 @@
 module.exports = function (strdata) {
-  console.log(__dirname, strdata);
-  const { BrowserWindow, ipcMain } = require('electron');
-  console.log('helo', strdata);
+  const { BrowserWindow, ipcMain, app } = require('electron');
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
   const data = JSON.parse(strdata);
   setTimeout(() => {
     const win = new BrowserWindow({
@@ -25,7 +28,6 @@ module.exports = function (strdata) {
       }
     });
     // win.openDevTools({ mode: 'detach' });
-    console.log(data[1].content);
     win.setResizable(false);
     // show window without setting focus
     win.showInactive();

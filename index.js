@@ -93,6 +93,7 @@ module.exports = class BetterNotifs extends Plugin {
         DiscordNative.window.isAlwaysOnTop().then((onTop) => {
           DiscordNative.window.setAlwaysOnTop(0, !onTop);
           DiscordNative.window.setAlwaysOnTop(0, onTop);
+          DiscordNative.window.focus(0, 0);
           transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
         });
         resolve(message);
