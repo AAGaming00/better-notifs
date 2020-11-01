@@ -24,7 +24,7 @@ module.exports = function (strdata) {
         enableRemoteModule: true
       }
     });
-    // win.openDevTools();
+    // win.openDevTools({ mode: 'detach' });
     console.log(data[1].content);
     win.setResizable(false);
     // show window without setting focus

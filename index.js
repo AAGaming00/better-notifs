@@ -15,7 +15,7 @@ module.exports = class BetterNotifs extends Plugin {
     });
     tChild.stderr.on('data', (data) => {
       // output from the child process
-      console.log(data.toString());
+      console.error(data.toString());
     });
     tChild.on('exit', (d) => {
       console.log(d);
@@ -85,12 +85,16 @@ module.exports = class BetterNotifs extends Plugin {
 
   ipcHandler (message) {
     const { getGuild } = getModule([ 'getGuild' ], false);
-    console.log(message)
+    console.log(message);
     const transition = getModule([ 'transitionTo' ], false);
     return new Promise((resolve, reject) => {
       if (message) {
         const guild = getGuild(message[0].guild_id);
-        transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
+        DiscordNative.window.isAlwaysOnTop().then((onTop) => {
+          DiscordNative.window.setAlwaysOnTop(0, !onTop);
+          DiscordNative.window.setAlwaysOnTop(0, onTop);
+          transition.transitionTo(`/channels/${guild ? guild.id : '@me'}/${message[0].id}/${message[1].id}`); // Again, thanks Ben!
+        });
         resolve(message);
       }
       reject();
